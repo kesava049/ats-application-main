@@ -1,12 +1,12 @@
 "use client"
 
 import React, { useState, useEffect, useMemo, useCallback } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Progress } from "../../components/ui/progress"
-import { ScrollArea } from "../../components/ui/scroll-area"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Badge } from "../../../components/ui/badge"
+import { Button } from "../../../components/ui/button"
+import { Input } from "../../../components/ui/input"
+import { Progress } from "../../../components/ui/progress"
+import { ScrollArea } from "../../../components/ui/scroll-area"
 import { 
   Target, 
   Users, 
@@ -34,7 +34,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select"
+} from "../../../components/ui/select"
 import {
   Table,
   TableBody,
@@ -42,7 +42,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../components/ui/table"
+} from "../../../components/ui/table"
 
 
 interface JobPost {
@@ -319,7 +319,7 @@ export default function CandidateMatching({ jobs }: CandidateMatchingProps) {
             <Input
               placeholder="Search candidates, job titles, or companies with AI..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               className="pl-10 h-12 text-lg border-blue-200 focus:border-blue-400"
             />
           </div>
@@ -476,7 +476,7 @@ export default function CandidateMatching({ jobs }: CandidateMatchingProps) {
                         <TableCell>
                           <Select
                             value={candidate.status}
-                            onValueChange={(value) => handlePipelineChange(candidate.id, value)}
+                            onValueChange={(value: string) => handlePipelineChange(candidate.id, value)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />

@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { Button } from "../../components/ui/button"
-import { Badge } from "../../components/ui/badge"
+import { Button } from "../../../components/ui/button"
+import { Badge } from "../../../components/ui/badge"
 import { 
   Filter, 
   X, 
@@ -21,7 +21,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select"
+} from "../../../components/ui/select"
 
 interface FilterOptions {
   status: string

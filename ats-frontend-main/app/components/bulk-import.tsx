@@ -139,6 +139,8 @@ interface ProcessedFile {
   processing_time?: number
   parsed_data?: any
   candidate_id?: number
+  candidate_created?: boolean
+  candidate_creation_error?: string | null
   error?: string
 }
 
@@ -309,11 +311,11 @@ const JobCard = ({ job }: { job: UnifiedJob }) => {
                       )}
                       {/* Show green check for successful processing (both parsing AND candidate creation) */}
                       {file.status === 'success' && file.candidate_created && (
-                        <CheckCircle className="h-4 w-4 text-green-500" title="Processed and candidate created successfully" />
+                        <CheckCircle className="h-4 w-4 text-green-500" />
                       )}
                       {/* Show red X for failed processing (parsing OR candidate creation failed) */}
                       {file.status === 'failed' && (
-                        <XCircle className="h-4 w-4 text-red-500" title={file.candidate_creation_error || "Processing failed"} />
+                        <XCircle className="h-4 w-4 text-red-500" />
                       )}
                     </div>
                   </div>
@@ -336,7 +338,10 @@ interface ProcessingResult {
   processing_time?: number
   embedding_status?: string
   embedding_generated?: boolean
-  resume_id?: string
+  resume_id?: number | null
+  candidate_created?: boolean
+  candidate_creation_error?: string | null
+  candidate_id?: number | null
   failure_reason?: string
   failure_type?: string
 }
@@ -399,7 +404,7 @@ function ResumeFilesList() {
       const user = JSON.parse(localStorage.getItem('ats_user') || 'null');
       const companyId = user?.companyId;
       
-      const url = new URL('http://localhost:8002/api/v1/download/resumes/with-files');
+      const url = new URL(`${BASE_API_URL}/download/resumes/with-files`);
       if (companyId) {
         url.searchParams.set('company_id', companyId.toString());
       }
@@ -433,7 +438,7 @@ function ResumeFilesList() {
         throw new Error('Authentication required. Please login again.');
       }
 
-      const response = await fetch(`http://localhost:8002${downloadUrl}`, {
+      const response = await fetch(`${BASE_API_URL.replace('/api/v1', '')}${downloadUrl}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'X-Company-ID': companyId.toString()
@@ -536,12 +541,6 @@ function ResumeFilesList() {
     }
   }
 
-
-  // Set client-side rendering flag
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   // Clear selection when filters change
   useEffect(() => {
     setSelectedFiles(new Set())
@@ -610,6 +609,26 @@ function ResumeFilesList() {
       return resumeFiles.length
     }
     return resumeFiles.filter(file => file.file_type.toLowerCase() === fileType.toLowerCase()).length
+  }
+
+  // File types for tabs
+  const fileTypes = ["all", "pdf", "docx", "doc", "txt"]
+
+  // Get file type icon for tabs
+  const getFileTypeIcon = (fileType: string) => {
+    switch (fileType.toLowerCase()) {
+      case 'all':
+        return <FileText className="w-4 h-4" />
+      case 'pdf':
+        return <FileText className="w-4 h-4 text-red-500" />
+      case 'doc':
+      case 'docx':
+        return <FileText className="w-4 h-4 text-blue-500" />
+      case 'txt':
+        return <FileText className="w-4 h-4 text-gray-500" />
+      default:
+        return <FileText className="w-4 h-4" />
+    }
   }
 
   // Get file icon for results
@@ -968,7 +987,7 @@ export default function BulkImport() {
         candidate_id: result.candidate_id || null,
         resume_id: result.resume_id || null,
         // Update status based on parsing success (candidate creation is optional)
-        status: result.status === 'success' ? 'success' : 'failed'
+        status: (result.status === 'success' || result.status === 'duplicate') ? result.status : 'failed' as "success" | "failed" | "duplicate"
       })) : []
     }
     
@@ -1027,7 +1046,7 @@ export default function BulkImport() {
           throw new Error('Authentication required')
         }
 
-        const response = await fetch(`http://localhost:8002/api/v1/bulk-processing-status/${jobId}`, {
+        const response = await fetch(`${BASE_API_URL}/bulk-processing-status/${jobId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -1269,7 +1288,7 @@ export default function BulkImport() {
       }
 
       // Use Python backend for fetching failed resumes
-      const response = await fetch(`http://localhost:8002/api/v1/failed-resumes?company_id=${companyId}`, {
+      const response = await fetch(`${BASE_API_URL}/failed-resumes?company_id=${companyId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -1303,7 +1322,7 @@ export default function BulkImport() {
         return;
       }
 
-      const response = await fetch(`${NODE_API_URL}/api/jobs?companyId=${companyId}`, {
+      const response = await fetch(`${NODE_API_URL}/api/jobs/get-jobs?companyId=${companyId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -1555,7 +1574,7 @@ export default function BulkImport() {
         }
 
         // Check job status from Python backend
-        const response = await fetch(`http://localhost:8002/api/v1/bulk-processing-status/${jobId}`, {
+        const response = await fetch(`${BASE_API_URL}/bulk-processing-status/${jobId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -1639,7 +1658,7 @@ export default function BulkImport() {
         description: "Removing successfully re-parsed failed resumes",
       });
 
-      const response = await fetch(`http://localhost:8002/api/v1/cleanup-failed-resumes?company_id=${companyId}`, {
+      const response = await fetch(`${BASE_API_URL}/cleanup-failed-resumes?company_id=${companyId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1695,7 +1714,7 @@ export default function BulkImport() {
       }
 
       // Use Python backend for deleting failed resume
-      const response = await fetch(`http://localhost:8002/api/v1/failed-resumes/${resumeId}?company_id=${companyId}`, {
+      const response = await fetch(`${BASE_API_URL}/failed-resumes/${resumeId}?company_id=${companyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -1743,7 +1762,7 @@ export default function BulkImport() {
       }
 
       // Use Python backend for deleting all failed resumes
-      const response = await fetch(`http://localhost:8002/api/v1/failed-resumes?company_id=${companyId}`, {
+      const response = await fetch(`${BASE_API_URL}/failed-resumes?company_id=${companyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -1884,7 +1903,7 @@ export default function BulkImport() {
       }
 
       // Use original Python backend for bulk resume parsing
-      const response = await fetch(`http://localhost:8002/api/v1/bulk-parse-resumes?company_id=${companyId}`, {
+      const response = await fetch(`${BASE_API_URL}/bulk-parse-resumes?company_id=${companyId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -2596,20 +2615,21 @@ export default function BulkImport() {
 
     } catch (error) {
       console.error('❌ Error re-processing failed resumes:', error)
+      const err = error as Error
       console.error('❌ Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
+        message: err.message,
+        stack: err.stack,
+        name: err.name
       })
       
       // Check if it's a network error or API error
-      if (error.message.includes('Failed to fetch')) {
+      if (err.message.includes('Failed to fetch')) {
         toast({
           title: "Network Error",
           description: "Cannot connect to the server. Please check your internet connection and try again.",
           variant: "destructive",
         })
-      } else if (error.message.includes('401')) {
+      } else if (err.message.includes('401')) {
         toast({
           title: "Authentication Error",
           description: "Your session has expired. Please refresh the page and login again.",
@@ -2618,7 +2638,7 @@ export default function BulkImport() {
       } else {
         toast({
           title: "Re-upload Failed",
-          description: `Failed to re-process the selected resumes: ${error.message}`,
+          description: `Failed to re-process the selected resumes: ${err.message}`,
           variant: "destructive",
         })
       }
@@ -2896,8 +2916,9 @@ export default function BulkImport() {
                   total_files: unifiedJobs.reduce((sum, job) => sum + job.total_files, 0),
                   successful_files: unifiedJobs.reduce((sum, job) => sum + job.successful_files, 0),
                   failed_files: unifiedJobs.reduce((sum, job) => sum + job.failed_files, 0),
-                  duplicate_files: unifiedJobs.reduce((sum, job) => sum + job.duplicate_files, 0),
-                  total_processing_time: 0
+                  duplicate_files: unifiedJobs.reduce((sum, job) => sum + (job.duplicate_files ?? 0), 0),
+                  total_processing_time: 0,
+                  results: []
                 }
                 const safeResults = validateParseResults(dataSource)
                 console.log('🔍 Summary cards - dataSource:', dataSource)
@@ -3378,7 +3399,7 @@ export default function BulkImport() {
                         const companyId = user?.companyId
                         
                         // Test resumes endpoint
-                        const response = await fetch(`http://localhost:8002/api/v1/resumes?company_id=${companyId}`, {
+                        const response = await fetch(`${BASE_API_URL}/resumes?company_id=${companyId}`, {
                           headers: { 'Authorization': `Bearer ${token}` }
                         })
                         const data = await response.json()
@@ -3386,7 +3407,7 @@ export default function BulkImport() {
                         
                         // Test bulk status endpoint (this will likely fail with test job ID)
                         try {
-                          const statusResponse = await fetch(`http://localhost:8002/api/v1/bulk-processing-status/test`, {
+                          const statusResponse = await fetch(`${BASE_API_URL}/bulk-processing-status/test`, {
                             headers: { 'Authorization': `Bearer ${token}` }
                           })
                           const statusData = await statusResponse.json()

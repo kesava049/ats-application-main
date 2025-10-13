@@ -1,9 +1,9 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { Badge } from "./badge"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Badge } from "../ui/badge"
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, Bar, BarChart } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
 import type { PerformanceMetrics, TrendData } from "../../lib/performance-data"
 
 interface TrendChartProps {

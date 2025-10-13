@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { Button } from "./button"
-import { Badge } from "./badge"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Button } from "../ui/button"
+import { Badge } from "../ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { ArrowLeft, Mail, Award, TrendingUp, Target, Clock, Users, Star } from "lucide-react"
 import {
   MOCK_PERFORMANCE_DATA,
@@ -14,8 +14,8 @@ import {
   formatCurrency,
   formatPercentage,
 } from "../../lib/performance-data"
-import { KPIGrid, QualityMetrics } from "./performance-metrics"
-import { TrendChart, ConversionFunnel } from "./performance-charts"
+import { KPIGrid, QualityMetrics } from "../performance/performance-metrics"
+import { TrendChart, ConversionFunnel } from "../performance/performance-charts"
 import { MOCK_TREND_DATA } from "../../lib/performance-data"
 
 interface IndividualPerformanceProps {
@@ -51,9 +51,11 @@ export default function IndividualPerformance({ recruiterId, onBack }: Individua
   const performanceRating = getPerformanceRating(performanceScore)
 
   // Calculate some additional insights
-  const conversionRate = (performanceData.hiresCompleted / performanceData.applicationsReceived) * 100
+  const conversionRate = ((performanceData as any).applicationsReceived || 0) > 0 
+    ? (performanceData.hiresCompleted / (performanceData as any).applicationsReceived) * 100 
+    : 0
   const interviewToOfferRate = (performanceData.offersExtended / performanceData.interviewsConducted) * 100
-  const revenuePerApplication = performanceData.totalRevenue / performanceData.applicationsReceived
+  const revenuePerApplication = performanceData.totalRevenue / (performanceData as any).applicationsReceived
 
   return (
     <div className="space-y-6">

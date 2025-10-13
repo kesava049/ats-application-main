@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Progress } from "../../components/ui/progress"
-import { ScrollArea } from "../../components/ui/scroll-area"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Badge } from "../../../components/ui/badge"
+import { Button } from "../../../components/ui/button"
+import { Progress } from "../../../components/ui/progress"
+import { ScrollArea } from "../../../components/ui/scroll-area"
 import { 
   BarChart3, 
   TrendingUp, 
@@ -34,7 +34,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select"
+} from "../../../components/ui/select"
 
 interface JobPost {
   id: string

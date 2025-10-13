@@ -1,8 +1,3 @@
-"""
-Performance monitoring component for bulk resume processing.
-Shows real-time performance metrics and improvements.
-"""
-
 "use client"
 
 import React, { useState, useEffect } from 'react'

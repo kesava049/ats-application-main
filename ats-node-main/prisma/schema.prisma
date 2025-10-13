@@ -119,7 +119,7 @@ model Ats_JobPost {
 model CandidateApplication {
   id                 Int                 @id @default(autoincrement())
   companyId          Int
-  jobId              Int
+  jobId              Int?
   email              String
   phone              String
   coverLetter        String?
@@ -139,7 +139,7 @@ model CandidateApplication {
   yearsOfExperience  String?
   jobDeleted         Boolean             @default(false)
   company            Company             @relation(fields: [companyId], references: [id])
-  job                Ats_JobPost         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job                Ats_JobPost?        @relation(fields: [jobId], references: [id], onDelete: Cascade)
   interviewSchedules InterviewSchedule[]
 
   @@unique([companyId, email, jobId], name: "unique_candidate_per_job")

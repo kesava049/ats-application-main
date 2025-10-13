@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -48,6 +49,8 @@ import {
 import { useToast } from "../../hooks/use-toast"
 import { useCandidateContext } from "../contexts/candidate-context"
 import BASE_API_URL from "../../BaseUrlApi"
+import NODE_API_URL from "../../NodeApi"
+import { handleAuthError } from "../../lib/auth-error-handler"
 
 interface ParsedResumeData {
   id: number
@@ -150,6 +153,12 @@ export default function EnhancedCandidateManagement() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Job selection states
+  const [availableJobs, setAvailableJobs] = useState<any[]>([])
+  const [selectedJobForCandidate, setSelectedJobForCandidate] = useState<number | null>(null)
+  const [showJobSelectionModal, setShowJobSelectionModal] = useState(false)
+  const [pendingResumeId, setPendingResumeId] = useState<number | null>(null)
+
   // Fetch candidates
   const fetchCandidates = async (page = 1, search = "", status = "all") => {
     try {
@@ -249,10 +258,52 @@ export default function EnhancedCandidateManagement() {
     }
   }
 
-  // Create candidate from resume data
-  const createCandidateFromResume = async (resumeDataId: number, jobId?: number) => {
+  // Fetch available jobs for selection
+  async function fetchAvailableJobs() {
+    try {
+      const user = JSON.parse(localStorage.getItem('ats_user') || 'null');
+      const token = user?.token;
+      const companyId = user?.companyId;
+
+      if (!token || !companyId) {
+        return;
+      }
+
+      const response = await fetch(`${NODE_API_URL}/api/jobs/get-jobs?companyId=${companyId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        handleAuthError(response);
+        return;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableJobs(data.jobs || []);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setAvailableJobs([]);
+    }
+  }
+
+  // Show job selection modal before creating candidate
+  const initiateCreateCandidate = (resumeDataId: number) => {
+    setPendingResumeId(resumeDataId)
+    setSelectedJobForCandidate(null)
+    setShowJobSelectionModal(true)
+  }
+
+  // Create candidate from resume data with selected job
+  const createCandidateFromResume = async () => {
+    if (!pendingResumeId) return
+
     // Set loading state for this specific resume
-    setCreatingCandidate(resumeDataId)
+    setCreatingCandidate(pendingResumeId)
     
     try {
       const user = JSON.parse(localStorage.getItem('ats_user') || 'null')
@@ -262,6 +313,9 @@ export default function EnhancedCandidateManagement() {
         throw new Error('Authentication required')
       }
 
+      // Close modal
+      setShowJobSelectionModal(false)
+
       const response = await fetch(`${BASE_API_URL}/candidates/create-from-resume`, {
         method: 'POST',
         headers: {
@@ -269,8 +323,8 @@ export default function EnhancedCandidateManagement() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          resumeDataId: resumeDataId,
-          jobId: jobId
+          resumeDataId: pendingResumeId,
+          jobId: selectedJobForCandidate // Pass selected job ID (can be null)
         })
       })
 
@@ -280,12 +334,20 @@ export default function EnhancedCandidateManagement() {
 
       const data = await response.json()
       
-      // Show success message with better visibility
+      // Show which job was assigned
+      const jobName = selectedJobForCandidate 
+        ? availableJobs.find(j => j.id === selectedJobForCandidate)?.title || 'Selected Job'
+        : 'General Pool (No specific job)';
+      
       toast({
         title: "✅ Success",
-        description: "Candidate added successfully!",
+        description: `Candidate added to ${jobName}`,
         duration: 3000,
       })
+
+      // Reset state
+      setPendingResumeId(null)
+      setSelectedJobForCandidate(null)
 
       // Always update the count regardless of active tab
       // Use optimistic update to avoid full page re-render
@@ -295,10 +357,8 @@ export default function EnhancedCandidateManagement() {
       // Decrement parsed resumes count since one was converted to candidate
       setResumeDataTotalCount(prev => Math.max(0, prev - 1))
       
-      // Only refresh candidates list if currently on candidates tab to avoid unnecessary re-renders
-      if (activeTab === "candidates") {
-        fetchCandidates(candidatesCurrentPage, searchQuery, statusFilter)
-      }
+      // Refresh resume data to update the list
+      fetchResumeData(resumeDataCurrentPage, searchQuery)
 
     } catch (error) {
       console.error('Error creating candidate:', error)
@@ -496,6 +556,7 @@ export default function EnhancedCandidateManagement() {
   useEffect(() => {
     fetchCandidates()
     fetchResumeData()
+    fetchAvailableJobs()
   }, []) // Empty dependency array - runs only on mount
 
   // Load data on tab change (only if not already loaded)
@@ -689,7 +750,7 @@ export default function EnhancedCandidateManagement() {
 
         <div className="flex gap-2">
           <Button
-            onClick={() => createCandidateFromResume(resume.id)}
+            onClick={() => initiateCreateCandidate(resume.id)}
             disabled={creatingCandidate === resume.id}
             className="flex items-center gap-2"
           >
@@ -995,7 +1056,7 @@ export default function EnhancedCandidateManagement() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => createCandidateFromResume(resume.id)}
+                            onClick={() => initiateCreateCandidate(resume.id)}
                             disabled={creatingCandidate === resume.id}
                             className="min-w-[40px]"
                           >
@@ -1088,9 +1149,11 @@ export default function EnhancedCandidateManagement() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900">{candidateToDelete.firstName} {candidateToDelete.lastName}</h4>
                 <p className="text-sm text-gray-600">{candidateToDelete.email}</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Applied for {candidateToDelete.appliedJobs?.length || 0} job(s)
-                </p>
+                {candidateToDelete.job && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Applied for: {candidateToDelete.job.title}
+                  </p>
+                )}
               </div>
               <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-800">
@@ -1136,6 +1199,67 @@ export default function EnhancedCandidateManagement() {
               )}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Job Selection Modal */}
+      <Dialog open={showJobSelectionModal} onOpenChange={setShowJobSelectionModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Select Job for Candidate</DialogTitle>
+            <DialogDescription>
+              Choose which job position this candidate should be applied to, or add them to the general pool.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Job Position</label>
+              <Select 
+                value={selectedJobForCandidate?.toString() || ""} 
+                onValueChange={(value) => setSelectedJobForCandidate(value === "null" ? null : parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a job position" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="null">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <div>
+                        <div className="font-medium">General Pool (No specific job)</div>
+                        <div className="text-xs text-gray-500">Candidate can be assigned later</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  {availableJobs.map((job) => (
+                    <SelectItem key={job.id} value={job.id.toString()}>
+                      <div className="flex flex-col">
+                        <div className="font-medium">{job.title}</div>
+                        <div className="text-xs text-gray-500">
+                          {job.city} • {job.jobType}
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowJobSelectionModal(false)
+                setPendingResumeId(null)
+                setSelectedJobForCandidate(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={createCandidateFromResume}>
+              Add Candidate
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

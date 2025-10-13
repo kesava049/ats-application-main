@@ -477,12 +477,14 @@ export default function BulkJobPosting({ onJobsCreated }: BulkJobPostingProps) {
       }
 
       // Create a more detailed error message
-      let fullErrorMessage = errorMessage
+      let fullErrorMessage = errorMessage;
       if (errorDetails.length > 0) {
-        fullErrorMessage += '\n\nDetails:\n' + errorDetails.map(detail => `• ${detail}`).join('\n')
+        fullErrorMessage +=
+          "\n\nDetails:\n" +
+          (errorDetails as string[]).map((detail: string) => `• ${detail}`).join("\n");
       }
 
-      setMessage({ type: 'error', text: fullErrorMessage })
+      setMessage({ type: "error", text: fullErrorMessage });
       toast({
         title: "Error",
         description: errorMessage,
@@ -1206,7 +1208,7 @@ export default function BulkJobPosting({ onJobsCreated }: BulkJobPostingProps) {
                                 <span className="font-medium text-gray-600">Salary Min:</span>
                                 <div className="flex items-center space-x-2">
                                   <p className="text-gray-900 font-medium">{formatIndianRupees(job.salaryMin)}</p>
-                                  {!job.salaryMin || job.salaryMin === 0 ? (
+                                  {!job.salaryMin || Number(job.salaryMin) === 0 ? (
                                     <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">Missing</span>
                                   ) : (
                                     <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">✓</span>
@@ -1217,7 +1219,7 @@ export default function BulkJobPosting({ onJobsCreated }: BulkJobPostingProps) {
                                 <span className="font-medium text-gray-600">Salary Max:</span>
                                 <div className="flex items-center space-x-2">
                                   <p className="text-gray-900 font-medium">{formatIndianRupees(job.salaryMax)}</p>
-                                  {!job.salaryMax || job.salaryMax === 0 ? (
+                                  {!job.salaryMax || Number(job.salaryMax) === 0 ? (
                                     <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">Missing</span>
                                   ) : (
                                     <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">✓</span>
@@ -1231,7 +1233,7 @@ export default function BulkJobPosting({ onJobsCreated }: BulkJobPostingProps) {
                               <div className="space-y-1">
                                 <span className="font-medium text-gray-600">Salary Range:</span>
                                 <p className="text-gray-900 font-medium">
-                                  {job.salaryMin && job.salaryMax && job.salaryMin > 0 && job.salaryMax > 0
+                                  {job.salaryMin && job.salaryMax && Number(job.salaryMin) > 0 && Number(job.salaryMax) > 0
                                     ? `${formatIndianRupees(job.salaryMin)} - ${formatIndianRupees(job.salaryMax)}`
                                     : <span className="text-red-600">Not specified</span>
                                   }

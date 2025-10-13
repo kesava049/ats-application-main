@@ -269,18 +269,19 @@ export default function EmailAnalytics({ defaultTab = "overview" }: EmailAnalyti
       }
     } catch (err) {
       console.error('❌ Error fetching email analytics:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
       console.error('❌ Error details:', {
-        name: err.name,
-        message: err.message,
-        stack: err.stack
+        name: error.name,
+        message: error.message,
+        stack: error.stack
       });
       
-      if (err.name === 'AbortError') {
+      if (error.name === 'AbortError') {
         setError('Request timeout. Please check your connection and try again.')
-      } else if (err.message.includes('Failed to fetch')) {
+      } else if (error.message.includes('Failed to fetch')) {
         setError('Network error. Please check if the backend server is running.')
-      } else if (err.message.includes('HTTP error')) {
-        setError(`Server error: ${err.message}`)
+      } else if (error.message.includes('HTTP error')) {
+        setError(`Server error: ${error.message}`)
       } else {
         setError('Failed to connect to the server. Please check your connection.')
       }

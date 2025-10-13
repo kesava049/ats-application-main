@@ -1,17 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { Badge } from "./badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Badge } from "../ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Users, TrendingUp, Award, Target, IndianRupee, Clock, ArrowUp } from "lucide-react"
 
-import IndividualPerformance from "./individual-performance"
-import ComparativeAnalysis from "./comparative-analysis"
-import TrendsInsights from "./trends-insights"
-import { TrendChart } from "./performance-charts"
+import IndividualPerformance from "../performance/individual-performance"
+import ComparativeAnalysis from "../performance/comparative-analysis"
+import TrendsInsights from "../performance/trends-insights"
+import { TrendChart } from "../performance/performance-charts"
 import {
   MOCK_PERFORMANCE_DATA,
   MOCK_TREND_DATA,

@@ -129,6 +129,7 @@ export default function AICandidateAnalysis({ candidate, jobPosting, onAnalysisC
       
     } catch (error) {
       console.error("AI Analysis failed:", error)
+      const err = error as Error
       // Set a fallback analysis if AI analysis fails
       const fallbackAnalysis: AIAnalysis = {
         overallScore: 50,
@@ -136,7 +137,7 @@ export default function AICandidateAnalysis({ candidate, jobPosting, onAnalysisC
         experienceMatch: 50,
         culturalFit: 50,
         verdict: "consider",
-        reasoning: `Unable to perform AI analysis: ${error.message}. Please try again.`,
+        reasoning: `Unable to perform AI analysis: ${err.message}. Please try again.`,
         confidence: 30,
         strengths: ["AI analysis unavailable"],
         weaknesses: ["Please retry AI analysis"],

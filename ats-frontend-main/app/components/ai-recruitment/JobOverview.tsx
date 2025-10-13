@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { ScrollArea } from "../../components/ui/scroll-area"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
+import { Badge } from "../../../components/ui/badge"
+import { Button } from "../../../components/ui/button"
+import { Input } from "../../../components/ui/input"
+import { ScrollArea } from "../../../components/ui/scroll-area"
 import { 
   Briefcase, 
   Building2, 
@@ -27,7 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
+} from "../../../components/ui/dropdown-menu"
 
 interface JobPost {
   id: string

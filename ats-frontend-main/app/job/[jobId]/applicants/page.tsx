@@ -1105,7 +1105,7 @@ export default function JobApplicantsPage() {
                 <h4 className="font-medium text-gray-900">{candidateToDelete.candidate_data?.Name || 'Unknown'}</h4>
                 <p className="text-sm text-gray-600">{candidateToDelete.candidate_data?.Email || 'No email'}</p>
                 <p className="text-sm text-gray-500 mt-1">
-                  Match Score: {Math.round(candidateToDelete.match_score * 100)}%
+                  Match Score: {Math.round(candidateToDelete.overall_score.score * 100)}%
                 </p>
               </div>
             )}

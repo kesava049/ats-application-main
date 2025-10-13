@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
-import { Button } from "./button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select"
-import { Badge } from "./badge"
-import { Checkbox } from "./checkbox"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import { Button } from "../ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Badge } from "../ui/badge"
+import { Checkbox } from "../ui/checkbox"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 import { TrendingUp, TrendingDown, Users, BarChart3, Download } from "lucide-react"
 import {
   Bar,
@@ -22,7 +22,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
 } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
 import {
   type PerformanceMetrics,
   MOCK_PERFORMANCE_DATA,
@@ -344,7 +344,9 @@ export default function ComparativeAnalysis() {
               {filteredData
                 .sort((a, b) => calculatePerformanceScore(b) - calculatePerformanceScore(a))
                 .map((recruiter, index) => {
-                  const conversionRate = (recruiter.hiresCompleted / recruiter.applicationsReceived) * 100
+                  const conversionRate = ((recruiter as any).applicationsReceived || 0) > 0 
+                    ? (recruiter.hiresCompleted / (recruiter as any).applicationsReceived) * 100 
+                    : 0
                   const overallScore = calculatePerformanceScore(recruiter)
 
                   return (

@@ -1,8 +1,8 @@
 "use client"
 import type { User } from "../../lib/auth-utils"
-import { Card, CardContent } from "./card"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
-import { Badge } from "./badge"
+import { Card, CardContent } from "../ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Badge } from "../ui/badge"
 
 interface OrgChartProps {
   users: User[]

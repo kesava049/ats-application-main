@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import BASE_API_URL from '../../BaseUrlApi'
 
 interface CandidateContextType {
   totalCandidates: number
@@ -36,7 +37,7 @@ export function CandidateProvider({ children }: { children: React.ReactNode }) {
 
         if (!token || !companyId) return
 
-        const response = await fetch(`http://localhost:5000/api/candidates?limit=1`, {
+        const response = await fetch(`${BASE_API_URL}/candidates?limit=1`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
