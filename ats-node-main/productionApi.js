@@ -1,0 +1,3 @@
+const PRODUCTION_BASE_URL = "http://158.220.127.100:5000";
+
+export { PRODUCTION_BASE_URL };

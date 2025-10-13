@@ -1,0 +1,31 @@
+{
+    "name": "authbackend",
+    "version": "1.0.0",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon server.js",
+        "clear:candidates": "node scripts/clear-candidate-applications.js",
+        "drop:reupload_jobs": "node scripts/drop-reupload-jobs.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@prisma/client": "^6.16.3",
+        "cors": "^2.8.5",
+        "dotenv": "^17.1.0",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "multer": "^2.0.2",
+        "node-fetch": "^3.3.2",
+        "nodemailer": "^7.0.5",
+        "nodemon": "^3.1.10",
+        "openai": "^6.3.0"
+    },
+    "devDependencies": {
+        "prisma": "^6.16.3"
+    }
+}

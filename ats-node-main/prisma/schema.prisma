@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Superadmin {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  userType  String    @default("SUPERADMIN")
+  createdAt DateTime  @default(now())
+  companies Company[]
+
+  @@map("superadmins")
+}
+
+model Company {
+  id                 Int                    @id @default(autoincrement())
+  name               String                 @unique
+  logo               String?
+  userCount          Int                    @default(0)
+  superadminId       Int
+  createdAt          DateTime               @default(now())
+  jobs               Ats_JobPost[]
+  logins             Ats_Login[]
+  candidates         CandidateApplication[]
+  customers          Customer[]
+  interviewSchedules InterviewSchedule[]
+  timesheets         TimesheetEntry[]
+  users              Ats_User[]
+  superadmin         Superadmin             @relation(fields: [superadminId], references: [id])
+  resume_data        ResumeData[]
+
+  @@map("companies")
+}
+
+model Ats_User {
+  id        Int         @id @default(autoincrement())
+  name      String
+  email     String      @unique
+  number    String
+  userType  UserType    @default(USER)
+  companyId Int?
+  logins    Ats_Login[]
+  company   Company?    @relation(fields: [companyId], references: [id])
+
+  @@map("ats_users")
+}
+
+model Ats_Login {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  userId    Int
+  loggedAt  DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id])
+  user      Ats_User @relation(fields: [userId], references: [id])
+}
+
+model Customer {
+  id            Int              @id @default(autoincrement())
+  companyId     Int
+  companyName   String
+  industry      String
+  companySize   String?
+  website       String?
+  description   String?
+  status        CustomerStatus   @default(ACTIVE)
+  priority      CustomerPriority @default(MEDIUM)
+  country       String
+  city          String
+  address       String?
+  annualRevenue String?
+  contractValue Decimal?         @db.Decimal(10, 2)
+  billingCycle  String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  email         String?
+  jobs          Ats_JobPost[]
+  company       Company          @relation(fields: [companyId], references: [id])
+}
+
+model Ats_JobPost {
+  id               Int                    @id @default(autoincrement())
+  companyId        Int
+  title            String
+  company          String
+  companyName      String
+  department       String?
+  internalSPOC     String
+  recruiter        String?
+  jobType          String
+  experienceLevel  String?
+  country          String
+  city             String
+  fullLocation     String
+  salaryMin        Int
+  salaryMax        Int
+  priority         String?
+  description      String
+  requirements     String
+  requiredSkills   String
+  benefits         String
+  createdAt        DateTime               @default(now())
+  jobStatus        JobStatus              @default(ACTIVE)
+  workType         WorkType               @default(ONSITE)
+  customerId       Int?
+  email            String
+  embedding        Json?
+  companyRelation  Company                @relation(fields: [companyId], references: [id])
+  customer         Customer?              @relation(fields: [customerId], references: [id])
+  applications     CandidateApplication[]
+  timesheetEntries TimesheetEntry[]
+}
+
+model CandidateApplication {
+  id                 Int                 @id @default(autoincrement())
+  companyId          Int
+  jobId              Int
+  email              String
+  phone              String
+  coverLetter        String?
+  portfolioUrl       String?
+  status             String              @default("pending")
+  appliedAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  currentLocation    String?
+  firstName          String
+  keySkills          String?
+  lastName           String
+  noticePeriod       String?
+  remoteWork         Boolean?
+  resumeFilePath     String?
+  salaryExpectation  Int?
+  startDate          String?
+  yearsOfExperience  String?
+  jobDeleted         Boolean             @default(false)
+  company            Company             @relation(fields: [companyId], references: [id])
+  job                Ats_JobPost         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  interviewSchedules InterviewSchedule[]
+
+  @@unique([companyId, email, jobId], name: "unique_candidate_per_job")
+}
+
+model InterviewSchedule {
+  id            Int                  @id @default(autoincrement())
+  companyId     Int
+  candidateId   Int
+  candidateName String
+  interviewDate DateTime
+  interviewTime String
+  interviewType String
+  interviewMode String
+  platform      String?
+  meetingLink   String?
+  interviewer   String?
+  notes         String?
+  status        String               @default("SCHEDULED")
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  candidate     CandidateApplication @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  company       Company              @relation(fields: [companyId], references: [id])
+}
+
+model TimesheetEntry {
+  id             Int             @id @default(autoincrement())
+  companyId      Int
+  date           String
+  hours          Decimal         @db.Decimal(4, 2)
+  entityType     EntityType
+  taskType       String
+  comments       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  approvedAt     DateTime?
+  approvedBy     String?
+  attachments    String?
+  billable       Boolean         @default(true)
+  billableRate   Decimal?        @db.Decimal(8, 2)
+  breakTime      Decimal?        @db.Decimal(3, 2)
+  companyName    String?
+  endTime        String?
+  priority       Priority        @default(MEDIUM)
+  recruiterEmail String?
+  recruiterName  String
+  startTime      String?
+  status         TimesheetStatus @default(PENDING)
+  taskCategory   TaskCategory    @default(RECRUITMENT)
+  entityId       String?
+  entityName     String?
+  recruiterId    String?
+  jobId          Int?
+  company        Company         @relation(fields: [companyId], references: [id])
+  job            Ats_JobPost?    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model ResumeData {
+  id               Int      @id @default(autoincrement())
+  filename         String
+  file_path        String?
+  file_type        String
+  file_size        Int
+  processing_time  Float
+  parsed_data      Json
+  candidate_name   String
+  candidate_email  String
+  candidate_phone  String
+  total_experience String
+  is_unique        Boolean  @default(true)
+  embedding        Json?
+  company_id       Int?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  company          Company? @relation(fields: [company_id], references: [id])
+
+  @@index([candidate_email], map: "idx_resume_data_candidate_email")
+  @@index([candidate_name], map: "idx_resume_data_candidate_name")
+  @@index([filename], map: "idx_resume_data_filename")
+  @@index([is_unique], map: "idx_resume_data_is_unique")
+  @@map("resume_data")
+}
+
+model AIAnalysisResult {
+  id               Int      @id @default(autoincrement())
+  candidateId      Int
+  jobId            Int
+  companyId        Int
+  overallScore     Float
+  skillsMatch      Float
+  experienceMatch  Float
+  culturalFit      Float
+  verdict          String
+  confidence       Float
+  reasoning        String
+  strengths        Json
+  weaknesses       Json
+  aiModel          String
+  analysisDate     DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([candidateId, jobId, companyId], name: "unique_ai_analysis")
+  @@index([candidateId], map: "idx_ai_analysis_candidate")
+  @@index([jobId], map: "idx_ai_analysis_job")
+  @@index([companyId], map: "idx_ai_analysis_company")
+  @@index([verdict], map: "idx_ai_analysis_verdict")
+  @@map("ai_analysis_results")
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  PROSPECT
+  SUSPENDED
+}
+
+enum CustomerPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum WorkType {
+  ONSITE
+  REMOTE
+  HYBRID
+}
+
+enum JobStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+  FILLED
+}
+
+enum EntityType {
+  CUSTOMER
+  JOB
+  CANDIDATE
+}
+
+enum TaskCategory {
+  RECRUITMENT
+  CLIENT_MANAGEMENT
+  ADMINISTRATIVE
+  TRAINING
+  MEETING
+  RESEARCH
+  OTHER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TimesheetStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  SUBMITTED
+}
+
+enum UserType {
+  SUPERADMIN
+  ADMIN
+  MANAGER
+  USER
+}
