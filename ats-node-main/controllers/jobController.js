@@ -174,6 +174,39 @@ const processSingleJob = async(jobData, req) => {
         }
     });
 
+    // Generate job embedding automatically (async, don't wait)
+    try {
+        console.log(`🔄 Generating embedding for job ${newJob.id}: ${newJob.title}`);
+        // Call Python API to generate job embedding asynchronously
+        fetch('http://localhost:8000/api/v1/job-post-embeddings/update-job-embedding', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                job_id: newJob.id,
+                job_data: {
+                    id: newJob.id,
+                    title: newJob.title,
+                    description: newJob.description,
+                    requirements: newJob.requirements,
+                    requiredSkills: newJob.requiredSkills,
+                    experienceLevel: newJob.experienceLevel,
+                    company: newJob.company
+                }
+            })
+        }).then(response => {
+            if (response.ok) {
+                console.log(`✅ Embedding generated successfully for job ${newJob.id}`);
+            } else {
+                console.warn(`⚠️ Failed to generate embedding for job ${newJob.id}`);
+            }
+        }).catch(error => {
+            console.error(`❌ Error generating embedding for job ${newJob.id}:`, error.message);
+        });
+    } catch (embeddingError) {
+        console.error('Failed to initiate embedding generation:', embeddingError);
+        // Don't fail the request if embedding generation fails
+    }
+
     // Send email notification for job creation
     if (newJob.email) {
         try {
@@ -478,6 +511,45 @@ export const updateJobPost = async(req, res) => {
                 updatedFields.push(field.name);
             }
         });
+
+        // Regenerate job embedding if content changed (async, don't wait)
+        const contentFields = ['title', 'description', 'requirements', 'requiredSkills', 'experienceLevel'];
+        const contentChanged = contentFields.some(field =>
+            originalJob[field] !== updatedJob[field] && updatedJob[field] !== undefined
+        );
+
+        if (contentChanged) {
+            try {
+                console.log(`🔄 Regenerating embedding for updated job ${updatedJob.id}: ${updatedJob.title}`);
+                fetch('http://localhost:8000/api/v1/job-post-embeddings/update-job-embedding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        job_id: updatedJob.id,
+                        job_data: {
+                            id: updatedJob.id,
+                            title: updatedJob.title,
+                            description: updatedJob.description,
+                            requirements: updatedJob.requirements,
+                            requiredSkills: updatedJob.requiredSkills,
+                            experienceLevel: updatedJob.experienceLevel,
+                            company: updatedJob.company
+                        }
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        console.log(`✅ Embedding regenerated successfully for job ${updatedJob.id}`);
+                    } else {
+                        console.warn(`⚠️ Failed to regenerate embedding for job ${updatedJob.id}`);
+                    }
+                }).catch(error => {
+                    console.error(`❌ Error regenerating embedding for job ${updatedJob.id}:`, error.message);
+                });
+            } catch (embeddingError) {
+                console.error('Failed to initiate embedding regeneration:', embeddingError);
+                // Don't fail the request if embedding generation fails
+            }
+        }
 
         // Send email notification if there are updates and email is provided
         if (updatedFields.length > 0 && updatedJob.email) {

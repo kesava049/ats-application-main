@@ -49,8 +49,8 @@ import {
 } from "../../lib/location-data"
 import { useToast } from "../../components/ui/use-toast";
 import BASE_API_URL from '../../BaseUrlApi';
+import PYTHON_API_URL from '../../PythonApi';
 
-;
 import ViewFinalizeJobPosting from './viewFinalizeJobPosting';
 import BulkJobPosting from './bulkJobPosting';
 
@@ -262,7 +262,7 @@ export default function JobPostings({ setActiveTab }: { setActiveTab?: (tab: str
         return 0;
       }
 
-      const url = new URL(`http://localhost:8002/api/v1/candidates-matching/candidates-matching/job/${jobId}/candidates-fast`);
+      const url = new URL(`${PYTHON_API_URL}/candidates-matching/candidates-matching/job/${jobId}/candidates-fast`);
       url.searchParams.set('min_score', minScore);
       url.searchParams.set('company_id', companyId.toString());
 
@@ -985,7 +985,7 @@ export default function JobPostings({ setActiveTab }: { setActiveTab?: (tab: str
         throw new Error('Authentication required. Please login again.');
       }
 
-      const response = await fetch(`http://localhost:8002/job-posting/generate`, {
+      const response = await fetch(`${PYTHON_API_URL}/job-posting/generate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
