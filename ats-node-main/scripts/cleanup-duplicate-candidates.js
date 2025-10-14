@@ -22,7 +22,7 @@ async function main() {
             orderBy: { id: "desc" },
             select: { id: true }
         });
-        const keepId = apps[0] ? .id;
+        const keepId = apps.length > 0 ? apps[0].id : undefined;
         const deleteIds = apps.slice(1).map(a => a.id);
         if (deleteIds.length > 0) {
             console.log(`🗑️  Removing ${deleteIds.length} duplicates for (${companyId}, ${email}, ${jobId}), keeping id ${keepId}`);

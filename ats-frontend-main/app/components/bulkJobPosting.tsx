@@ -32,6 +32,7 @@ import {
 } from "lucide-react"
 import { useToast } from "../../components/ui/use-toast"
 import BASE_API_URL from '../../BaseUrlApi'
+import PYTHON_BASE_URL from '../../PythonApiBase'
 
 interface BulkJobData {
   title: string
@@ -211,7 +212,7 @@ export default function BulkJobPosting({ onJobsCreated }: BulkJobPostingProps) {
       const controller = new AbortController()
       setAbortController(controller)
 
-      const response = await fetch(`http://localhost:8002/job-posting/bulk-generate`, {
+      const response = await fetch(`${PYTHON_BASE_URL}/job-posting/bulk-generate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

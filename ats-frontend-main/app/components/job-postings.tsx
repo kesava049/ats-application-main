@@ -50,6 +50,7 @@ import {
 import { useToast } from "../../components/ui/use-toast";
 import BASE_API_URL from '../../BaseUrlApi';
 import PYTHON_API_URL from '../../PythonApi';
+import PYTHON_BASE_URL from '../../PythonApiBase';
 
 import ViewFinalizeJobPosting from './viewFinalizeJobPosting';
 import BulkJobPosting from './bulkJobPosting';
@@ -985,7 +986,7 @@ export default function JobPostings({ setActiveTab }: { setActiveTab?: (tab: str
         throw new Error('Authentication required. Please login again.');
       }
 
-      const response = await fetch(`${PYTHON_API_URL}/job-posting/generate`, {
+      const response = await fetch(`${PYTHON_BASE_URL}/job-posting/generate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
