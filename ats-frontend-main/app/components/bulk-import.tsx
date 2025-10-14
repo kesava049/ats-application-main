@@ -2786,16 +2786,13 @@ export default function BulkImport() {
                       console.log('🔍 Processing Results modal - processingStatus:', processingStatus)
                       return null
                     })()}
-                    <div>Successful: {parseResults.successful_files || 0} | Failed: {parseResults.failed_files || 0} | Total: {parseResults.total_files || 0}</div>
-                    <div>Processing time: {parseResults.total_processing_time?.toFixed(2)}s</div>
-                    <div>Duplicates: {parseResults.duplicate_files || 0}</div>
-                    {(parseResults.candidates_created !== undefined || parseResults.candidates_failed !== undefined) && (
-                      <div className="text-green-600 font-medium">
-                        Candidates Created: {parseResults.candidates_created || 0} | 
-                        Failed: {parseResults.candidates_failed || 0} | 
-                        Duplicates: {parseResults.candidates_duplicates || 0}
-                      </div>
-                    )}
+                    <div>
+                      <span className="text-green-600 font-medium">Successful: {parseResults.successful_files || 0}</span> | 
+                      <span className="text-red-600 font-medium">Failed: {parseResults.failed_files || 0}</span> | 
+                      <span className="text-blue-600 font-medium">Total: {parseResults.total_files || 0}</span>
+                    </div>
+                    <div><span className="text-black-600 font-medium">Processing time: {parseResults.total_processing_time?.toFixed(2)}s</span></div>
+                    <div><span className="text-yellow-600 font-medium">Duplicates: {parseResults.duplicate_files || 0}</span></div>
                   </div>
                 )}
               </div>

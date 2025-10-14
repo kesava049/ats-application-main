@@ -36,7 +36,7 @@ import {
   RefreshCw,
 } from "lucide-react"
 import BASE_API_URL from "../../BaseUrlApi"
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 import { useCompany } from "../../lib/company-context"
 
@@ -206,13 +206,14 @@ export default function Reports() {
     }
   }
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (!reportsData) return
 
-    const workbook = XLSX.utils.book_new()
+    const workbook = new ExcelJS.Workbook()
 
     // Summary sheet
-    const summaryData = [
+    const summarySheet = workbook.addWorksheet('Summary')
+    summarySheet.addRows([
       ['Metric', 'Value'],
       ['Total Jobs', reportsData.summary.overall.totalJobs],
       ['Total Candidates', reportsData.summary.overall.totalCandidates],
@@ -226,17 +227,13 @@ export default function Reports() {
       ['Interview Completion Rate', `${reportsData.summary.interviews.completionRate}%`],
       ['Customer Active Rate', `${reportsData.summary.customers.activeRate}%`],
       ['Timesheet Approval Rate', `${reportsData.summary.timesheets.approvalRate}%`],
-    ]
-
-    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData)
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary')
+    ])
 
     // Jobs sheet
-    const jobsData = [
-      ['Title', 'Company', 'Department', 'Recruiter', 'Job Type', 'Experience Level', 'Location', 'Work Type', 'Status', 'Salary Range', 'Priority', 'Applications']
-    ]
+    const jobsSheet = workbook.addWorksheet('Jobs')
+    jobsSheet.addRow(['Title', 'Company', 'Department', 'Recruiter', 'Job Type', 'Experience Level', 'Location', 'Work Type', 'Status', 'Salary Range', 'Priority', 'Applications'])
     reportsData.details.jobs.data.forEach(job => {
-      jobsData.push([
+      jobsSheet.addRow([
         job.title,
         job.company,
         job.department,
@@ -251,15 +248,12 @@ export default function Reports() {
         job.applications?.length || 0
       ])
     })
-    const jobsSheet = XLSX.utils.aoa_to_sheet(jobsData)
-    XLSX.utils.book_append_sheet(workbook, jobsSheet, 'Jobs')
 
     // Candidates sheet
-    const candidatesData = [
-      ['Name', 'Email', 'Phone', 'Location', 'Job Title', 'Company', 'Status', 'Experience', 'Skills', 'Salary Expectation', 'Applied Date']
-    ]
+    const candidatesSheet = workbook.addWorksheet('Candidates')
+    candidatesSheet.addRow(['Name', 'Email', 'Phone', 'Location', 'Job Title', 'Company', 'Status', 'Experience', 'Skills', 'Salary Expectation', 'Applied Date'])
     reportsData.details.candidates.data.forEach(candidate => {
-      candidatesData.push([
+      candidatesSheet.addRow([
         `${candidate.firstName} ${candidate.lastName}`,
         candidate.email,
         candidate.phone,
@@ -273,15 +267,12 @@ export default function Reports() {
         new Date(candidate.appliedAt).toLocaleDateString()
       ])
     })
-    const candidatesSheet = XLSX.utils.aoa_to_sheet(candidatesData)
-    XLSX.utils.book_append_sheet(workbook, candidatesSheet, 'Candidates')
 
     // Interviews sheet
-    const interviewsData = [
-      ['Candidate', 'Interview Date', 'Time', 'Type', 'Mode', 'Platform', 'Interviewer', 'Status', 'Job Title', 'Company']
-    ]
+    const interviewsSheet = workbook.addWorksheet('Interviews')
+    interviewsSheet.addRow(['Candidate', 'Interview Date', 'Time', 'Type', 'Mode', 'Platform', 'Interviewer', 'Status', 'Job Title', 'Company'])
     reportsData.details.interviews.data.forEach(interview => {
-      interviewsData.push([
+      interviewsSheet.addRow([
         interview.candidateName,
         new Date(interview.interviewDate).toLocaleDateString(),
         interview.interviewTime,
@@ -294,15 +285,12 @@ export default function Reports() {
         interview.candidate?.job?.company || ''
       ])
     })
-    const interviewsSheet = XLSX.utils.aoa_to_sheet(interviewsData)
-    XLSX.utils.book_append_sheet(workbook, interviewsSheet, 'Interviews')
 
     // Customers sheet
-    const customersData = [
-      ['Company Name', 'Industry', 'Size', 'Status', 'Priority', 'Location', 'Revenue', 'Contract Value', 'Billing Cycle']
-    ]
+    const customersSheet = workbook.addWorksheet('Customers')
+    customersSheet.addRow(['Company Name', 'Industry', 'Size', 'Status', 'Priority', 'Location', 'Revenue', 'Contract Value', 'Billing Cycle'])
     reportsData.details.customers.data.forEach(customer => {
-      customersData.push([
+      customersSheet.addRow([
         customer.companyName,
         customer.industry,
         customer.companySize,
@@ -314,15 +302,12 @@ export default function Reports() {
         customer.billingCycle
       ])
     })
-    const customersSheet = XLSX.utils.aoa_to_sheet(customersData)
-    XLSX.utils.book_append_sheet(workbook, customersSheet, 'Customers')
 
     // Timesheets sheet
-    const timesheetsData = [
-      ['Recruiter', 'Date', 'Hours', 'Break Time', 'Entity Type', 'Task Type', 'Category', 'Priority', 'Status', 'Billable', 'Comments']
-    ]
+    const timesheetsSheet = workbook.addWorksheet('Timesheets')
+    timesheetsSheet.addRow(['Recruiter', 'Date', 'Hours', 'Break Time', 'Entity Type', 'Task Type', 'Category', 'Priority', 'Status', 'Billable', 'Comments'])
     reportsData.details.timesheets.data.forEach(timesheet => {
-      timesheetsData.push([
+      timesheetsSheet.addRow([
         timesheet.recruiterName,
         timesheet.date,
         timesheet.hours,
@@ -336,11 +321,9 @@ export default function Reports() {
         timesheet.comments
       ])
     })
-    const timesheetsSheet = XLSX.utils.aoa_to_sheet(timesheetsData)
-    XLSX.utils.book_append_sheet(workbook, timesheetsSheet, 'Timesheets')
 
     // Generate and download file
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const excelBuffer = await workbook.xlsx.writeBuffer()
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     saveAs(data, `ATS_Reports_${new Date().toISOString().split('T')[0]}.xlsx`)
   }
