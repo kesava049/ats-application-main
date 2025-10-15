@@ -51,7 +51,6 @@ uploads/
 *.pdf
 *.docx
 *.doc
-*.txt
 *.rtf
 *.png
 *.jpg
