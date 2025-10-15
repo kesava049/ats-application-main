@@ -38,6 +38,7 @@ Uses complete LLM-driven approach with EXPERT-LEVEL intelligence:
 
 import logging
 import json
+import re
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Query, Depends, status
 from pydantic import BaseModel
@@ -1010,6 +1011,101 @@ async def calculate_skills_experience_match_score(
             "experience_score": 0.0,
             "scoring_method": "Error in calculation"
         }
+
+# Helper functions for pure mathematical calculations
+async def calculate_pure_skill_alignment(job_skills: List[str], candidate_skills: List[str]) -> float:
+    """
+    Calculate pure skill alignment score between job requirements and candidate skills.
+    Returns a score between 0.0 and 1.0.
+    """
+    if not job_skills or not candidate_skills:
+        return 0.0
+    
+    # Convert to lowercase for case-insensitive matching
+    job_skills_lower = [skill.lower().strip() for skill in job_skills]
+    candidate_skills_lower = [skill.lower().strip() for skill in candidate_skills]
+    
+    # Calculate exact matches
+    exact_matches = 0
+    for job_skill in job_skills_lower:
+        if job_skill in candidate_skills_lower:
+            exact_matches += 1
+    
+    # Calculate partial matches (skills that contain keywords from job skills)
+    partial_matches = 0
+    for job_skill in job_skills_lower:
+        for candidate_skill in candidate_skills_lower:
+            if job_skill in candidate_skill or candidate_skill in job_skill:
+                partial_matches += 1
+                break
+    
+    # Calculate total matches (exact + partial, avoiding double counting)
+    total_matches = max(exact_matches, partial_matches)
+    
+    # Return alignment score
+    return min(1.0, total_matches / len(job_skills))
+
+async def calculate_pure_experience_relevance(job_experience_level: str, candidate_experience: str) -> float:
+    """
+    Calculate experience relevance score between job requirements and candidate experience.
+    Returns a score between 0.0 and 1.0.
+    """
+    if not job_experience_level or not candidate_experience or candidate_experience.lower() == 'unknown':
+        return 0.5  # Neutral score for unknown experience
+    
+    # Normalize experience level
+    job_level = job_experience_level.lower().strip()
+    candidate_exp = candidate_experience.lower().strip()
+    
+    # Extract years from candidate experience
+    years_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:years?|yrs?|yr)', candidate_exp)
+    if years_match:
+        candidate_years = float(years_match.group(1))
+    else:
+        # Try to extract numbers from experience string
+        numbers = re.findall(r'\d+(?:\.\d+)?', candidate_exp)
+        if numbers:
+            candidate_years = float(numbers[0])
+        else:
+            return 0.5  # Can't determine experience
+    
+    # Define experience level ranges
+    experience_ranges = {
+        'entry': (0, 2),
+        'junior': (1, 3),
+        'mid': (2, 5),
+        'mid-level': (2, 5),
+        'senior': (4, 8),
+        'lead': (6, 10),
+        'principal': (8, 15),
+        'director': (10, 20),
+        'executive': (15, 25)
+    }
+    
+    # Find matching experience range
+    job_level_key = None
+    for key in experience_ranges:
+        if key in job_level:
+            job_level_key = key
+            break
+    
+    if not job_level_key:
+        return 0.5  # Unknown job level
+    
+    min_years, max_years = experience_ranges[job_level_key]
+    
+    # Calculate relevance score
+    if candidate_years < min_years:
+        # Underqualified - score decreases as gap increases
+        gap = min_years - candidate_years
+        return max(0.1, 1.0 - (gap / min_years))
+    elif candidate_years > max_years:
+        # Overqualified - score decreases as gap increases
+        gap = candidate_years - max_years
+        return max(0.3, 1.0 - (gap / max_years))
+    else:
+        # Perfect match range
+        return 1.0
 
 # Comprehensive match score calculation using pure mathematical approach
 async def calculate_comprehensive_match_score(
