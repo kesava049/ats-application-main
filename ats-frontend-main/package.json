@@ -8,7 +8,9 @@
         "lint": "next lint",
         "start": "next start",
         "build:production": "node scripts/build-production.js",
-        "test:production": "npm run build && npm start"
+        "test:production": "npm run build && npm start",
+        "setup:env": "node -e \"console.log('Run ./setup-env.sh on macOS/Linux or setup-env.bat on Windows to create environment files')\"",
+        "dev:server": "NEXT_PUBLIC_API_URL=http://147.93.155.233:5000/api NEXT_PUBLIC_NODE_API_URL=http://147.93.155.233:5000 NEXT_PUBLIC_PYTHON_API_URL=http://147.93.155.233:8000/api/v1 NEXT_PUBLIC_PYTHON_BASE_URL=http://147.93.155.233:8000 PORT=3001 next dev"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.1",

@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Environment variables
+    env: {
+        NEXT_PUBLIC_API_URL: 'http://147.93.155.233:5000/api',
+        NEXT_PUBLIC_NODE_API_URL: 'http://147.93.155.233:5000',
+        NEXT_PUBLIC_PYTHON_API_URL: 'http://147.93.155.233:8000/api/v1',
+        NEXT_PUBLIC_PYTHON_BASE_URL: 'http://147.93.155.233:8000',
+        NEXT_PUBLIC_BASE_API_URL: 'http://147.93.155.233:5000/api',
+        PORT: '3001'
+    },
     eslint: {
         ignoreDuringBuilds: true,
     },
