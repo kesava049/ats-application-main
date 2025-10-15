@@ -19,7 +19,7 @@ class RateLimiter:
         """Initialize rate limiter with Redis."""
         try:
             self.redis_client = redis.Redis(
-                host='localhost',
+                host='147.93.155.233',
                 port=6379,
                 db=1,  # Use different DB for rate limiting
                 decode_responses=True

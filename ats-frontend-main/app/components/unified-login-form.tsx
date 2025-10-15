@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '../../components/ui/alert'
 import { Loader2, Mail, Shield, Users } from 'lucide-react'
 import LoginTypeSelector from './login-type-selector'
 
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://147.93.155.233:5000/api'
 
 interface UnifiedLoginFormProps {
   onUserLogin: (userData: any) => void

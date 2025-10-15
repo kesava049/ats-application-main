@@ -12,7 +12,7 @@ import AdminSidebar from '../components/admin-sidebar';
 import AdminTopbar from '../components/admin-topbar';
 import { handleAuthError } from '../../../lib/auth-error-handler';
 
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://147.93.155.233:5000/api';
 
 interface Superadmin {
   id: number;

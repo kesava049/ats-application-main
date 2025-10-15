@@ -58,7 +58,7 @@ option_settings:
     NodeVersion: $NODE_VERSION
   aws:elasticbeanstalk:application:environment:
     NODE_ENV: production
-    PORT: 3000
+    PORT: 3001
   aws:elasticbeanstalk:environment:proxy:staticfiles:
     /_next/static: .next/static
     /public: public
@@ -66,7 +66,7 @@ option_settings:
     IamInstanceProfile: aws-elasticbeanstalk-ec2-role
   aws:elasticbeanstalk:environment:process:default:
     HealthCheckPath: /
-    Port: 3000
+    Port: 3001
     Protocol: HTTP
 EOF
 
@@ -76,10 +76,10 @@ cat > .ebextensions/02-environment.config <<EOF
 option_settings:
   aws:elasticbeanstalk:application:environment:
     # API Configuration - Update these with your actual URLs
-    NEXT_PUBLIC_API_URL: "http://localhost:5000/api"
-    NEXT_PUBLIC_NODE_API_URL: "http://localhost:5000"
-    NEXT_PUBLIC_PYTHON_API_URL: "http://localhost:8000/api/v1"
-    NEXT_PUBLIC_PYTHON_BASE_URL: "http://localhost:8000"
+    NEXT_PUBLIC_API_URL: "http://147.93.155.233:5000/api"
+    NEXT_PUBLIC_NODE_API_URL: "http://147.93.155.233:5000"
+    NEXT_PUBLIC_PYTHON_API_URL: "http://147.93.155.233:8000/api/v1"
+    NEXT_PUBLIC_PYTHON_BASE_URL: "http://147.93.155.233:8000"
     
     # Production API URLs (uncomment and update for production)
     # NEXT_PUBLIC_API_URL: "https://your-backend-domain.com/api"
@@ -120,8 +120,8 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
+          FromPort: 3001
+          ToPort: 3001
           CidrIp: 0.0.0.0/0
 EOF
 
@@ -170,7 +170,7 @@ const nextConfig = {
         if (process.env.NODE_ENV === 'development') {
             return [{
                 source: '/api/:path*',
-                destination: 'http://localhost:5000/api/:path*',
+                destination: 'http://147.93.155.233:5000/api/:path*',
             }];
         }
         return [];

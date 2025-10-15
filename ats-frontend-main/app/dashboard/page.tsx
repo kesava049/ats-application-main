@@ -148,7 +148,7 @@ function DashboardPageContent() {
         return
       }
       
-      const response = await fetch('http://localhost:5000/api/dashboard', {
+      const response = await fetch('http://147.93.155.233:5000/api/dashboard', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

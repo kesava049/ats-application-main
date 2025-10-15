@@ -179,7 +179,7 @@ export default function JobApplicantsPage() {
 
       console.log('🗑️ Deleting candidate:', candidateId);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:3001'}/candidates/${candidateId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL || 'http://147.93.155.233:5000/api'}/candidates/${candidateId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

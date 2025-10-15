@@ -1544,9 +1544,7 @@ export const createCandidateFromResume = async(req, res) => {
 
         // Prevent duplicate per (company, email, job)
         // If jobId is null, check for duplicate by email only
-        const whereClause = targetJobId ?
-            { companyId: userCompanyId, email: email, jobId: targetJobId } :
-            { companyId: userCompanyId, email: email, jobId: null };
+        const whereClause = targetJobId ? { companyId: userCompanyId, email: email, jobId: targetJobId } : { companyId: userCompanyId, email: email, jobId: null };
 
         const existingCandidate = await prisma.CandidateApplication.findFirst({
             where: whereClause
@@ -1643,7 +1641,7 @@ export const reUploadFailedResumes = async(req, res) => {
 
         // Send files to Python backend for processing
         try {
-            const pythonResponse = await fetch('http://localhost:8000/api/v1/re-upload-failed-resumes', {
+            const pythonResponse = await fetch('http://147.93.155.233:8000/api/v1/re-upload-failed-resumes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1753,7 +1751,7 @@ export const getReuploadJobStatus = async(req, res) => {
         // If job is still processing, try to get status from Python backend
         if (job.status === 'processing') {
             try {
-                const pythonResponse = await fetch(`http://localhost:8000/api/v1/job-status/${jobId}`, {
+                const pythonResponse = await fetch(`http://147.93.155.233:8000/api/v1/job-status/${jobId}`, {
                     headers: {
                         'Authorization': req.headers.authorization
                     }

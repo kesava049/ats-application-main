@@ -84,7 +84,7 @@ class DatabaseService:
             else:
                 # Fallback to hardcoded connection parameters
                 logger.info("⚠️  DATABASE_URL not set, using hardcoded database connection")
-                host = "158.220.127.100"
+                host = "147.93.155.233"
                 port = 5432
                 user = "postgres"
                 password = "ai_ats@123"

@@ -85,7 +85,7 @@ sleep 15
 
 # Check application health
 print_status "Checking application health..."
-if curl -f http://localhost:3000 > /dev/null 2>&1; then
+if curl -f http://localhost:3001 > /dev/null 2>&1; then
     print_status "✅ Application is healthy and running!"
 else
     print_error "❌ Application health check failed!"
@@ -113,7 +113,7 @@ cd $BACKUP_DIR
 ls -t | tail -n +6 | xargs -r rm -rf
 
 print_status "🎉 Frontend deployment update completed successfully!"
-print_status "Application is running on port 3000"
+print_status "Application is running on port 3001"
 print_status "Check status with: pm2 status"
 print_status "View logs with: pm2 logs $SERVICE_NAME"
 

@@ -147,7 +147,7 @@ export default function AdminSidebar({
                       <div className="flex items-center min-w-0">
                         {company.logo ? (
                           <img 
-                            src={`http://localhost:5000/${company.logo}`} 
+                            src={`http://147.93.155.233:5000/${company.logo}`} 
                             alt={company.name}
                             className="h-6 w-6 rounded object-cover mr-2 flex-shrink-0"
                           />

@@ -80,7 +80,7 @@ export default function AICandidateAnalysis({ candidate, jobPosting, onAnalysisC
       }
 
       // Call real AI analysis API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ai-analysis/analyze`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://147.93.155.233:5000'}/api/ai-analysis/analyze`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

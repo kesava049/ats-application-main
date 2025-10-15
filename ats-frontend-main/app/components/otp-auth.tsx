@@ -140,7 +140,7 @@ export default function OTPAuth() {
       }
       
       if (error.message.includes('Failed to fetch')) {
-        throw new Error('Unable to connect to the server. Please check if the backend server is running on http://localhost:5000')
+        throw new Error('Unable to connect to the server. Please check if the backend server is running on http://147.93.155.233:5000')
       }
       
       if (retryCount < 2) {

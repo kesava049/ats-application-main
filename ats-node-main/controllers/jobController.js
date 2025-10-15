@@ -178,7 +178,7 @@ const processSingleJob = async(jobData, req) => {
     try {
         console.log(`🔄 Generating embedding for job ${newJob.id}: ${newJob.title}`);
         // Call Python API to generate job embedding asynchronously
-        fetch('http://localhost:8000/api/v1/job-post-embeddings/update-job-embedding', {
+        fetch('http://147.93.155.233:8000/api/v1/job-post-embeddings/update-job-embedding', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -521,7 +521,7 @@ export const updateJobPost = async(req, res) => {
         if (contentChanged) {
             try {
                 console.log(`🔄 Regenerating embedding for updated job ${updatedJob.id}: ${updatedJob.title}`);
-                fetch('http://localhost:8000/api/v1/job-post-embeddings/update-job-embedding', {
+                fetch('http://147.93.155.233:8000/api/v1/job-post-embeddings/update-job-embedding', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

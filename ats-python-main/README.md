@@ -219,7 +219,7 @@ DOC_ENABLE_LIBREOFFICE=true
 DOC_ENABLE_PANDOC=true
 
 # CORS Configuration
-CORS_ORIGINS=["http://localhost:3000", "https://yourdomain.com"]
+CORS_ORIGINS=["http://localhost:3001", "https://yourdomain.com"]
 ```
 
 ### 2. Production Environment Variables

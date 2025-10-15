@@ -20,7 +20,7 @@ class Settings:
     JWT_SECRET: str = os.getenv("JWT_SECRET", "ats-super-secure-jwt-secret-2024-production-ready")
     
     # Node.js Backend Configuration
-    NODE_API_URL: str = os.getenv("NODE_API_URL", "http://localhost:5000/api")
+    NODE_API_URL: str = os.getenv("NODE_API_URL", "http://147.93.155.233:5000/api")
     
     # OpenAI API Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")

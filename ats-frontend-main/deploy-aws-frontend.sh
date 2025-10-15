@@ -78,10 +78,10 @@ if [ ! -f "$APP_DIR/.env.local" ]; then
 # Frontend Environment Variables for AWS Deployment
 
 # API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-NEXT_PUBLIC_NODE_API_URL=http://localhost:5000
-NEXT_PUBLIC_PYTHON_API_URL=http://localhost:8000/api/v1
-NEXT_PUBLIC_PYTHON_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://147.93.155.233:5000/api
+NEXT_PUBLIC_NODE_API_URL=http://147.93.155.233:5000
+NEXT_PUBLIC_PYTHON_API_URL=http://147.93.155.233:8000/api/v1
+NEXT_PUBLIC_PYTHON_BASE_URL=http://147.93.155.233:8000
 
 # Production API URLs (update these for production)
 # NEXT_PUBLIC_API_URL=https://your-backend-domain.com/api
@@ -91,7 +91,7 @@ NEXT_PUBLIC_PYTHON_BASE_URL=http://localhost:8000
 
 # Application Configuration
 NODE_ENV=production
-PORT=3000
+PORT=3001
 EOF
     print_warning "Please update $APP_DIR/.env.local with your actual API URLs"
 fi
@@ -111,11 +111,11 @@ module.exports = {
     exec_mode: 'cluster',
     env: {
       NODE_ENV: 'development',
-      PORT: 3000
+      PORT: 3001
     },
     env_production: {
       NODE_ENV: 'production',
-      PORT: 3000
+      PORT: 3001
     },
     // Logging
     log_file: './logs/combined.log',
@@ -206,7 +206,7 @@ EOF
 # Configure firewall (if ufw is available)
 if command -v ufw >/dev/null 2>&1; then
     print_status "Configuring firewall..."
-    sudo ufw allow 3000/tcp
+    sudo ufw allow 3001/tcp
     sudo ufw allow ssh
     print_warning "Firewall configured. Make sure to configure security groups in AWS as well."
 fi
@@ -221,7 +221,7 @@ pm2 startup
 print_warning "Run the command shown above to enable PM2 startup on boot"
 
 print_status "Frontend deployment completed successfully!"
-print_status "Application is running on port 3000"
+print_status "Application is running on port 3001"
 print_status "Check status with: pm2 status"
 print_status "View logs with: pm2 logs $PM2_SERVICE_NAME"
 

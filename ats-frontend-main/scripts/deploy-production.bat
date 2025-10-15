@@ -28,7 +28,7 @@ if %errorlevel% equ 0 (
         echo @echo off
         echo set NODE_ENV=production
         echo set PORT=%PORT%
-        echo if "%PORT%"=="" set PORT=3000
+        echo if "%PORT%"=="" set PORT=3001
         echo echo 🌐 Starting production server on port %PORT%
         echo npm start
     ) > start-production.bat

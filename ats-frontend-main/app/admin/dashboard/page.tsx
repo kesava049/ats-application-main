@@ -13,7 +13,7 @@ import AdminSidebar from '../components/admin-sidebar';
 import AdminTopbar from '../components/admin-topbar';
 import { handleAuthError } from '../../../lib/auth-error-handler';
 
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://147.93.155.233:5000/api';
 
 interface Superadmin {
   id: number;
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center space-x-4">
                           {company.logo ? (
                             <img 
-                              src={`http://localhost:5000/${company.logo}`} 
+                              src={`http://147.93.155.233:5000/${company.logo}`} 
                               alt={company.name}
                               className="h-10 w-10 rounded object-cover"
                             />

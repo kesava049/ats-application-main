@@ -20,7 +20,7 @@ class QueueService:
         """Initialize Redis connection."""
         try:
             self.redis_client = redis.Redis(
-                host='localhost',  # Change to your Redis server
+                host='147.93.155.233',  # Change to your Redis server
                 port=6379,
                 db=0,
                 decode_responses=True,

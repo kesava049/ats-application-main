@@ -95,7 +95,7 @@ export default function CandidatesSearch() {
         return;
       }
 
-      const response = await fetch("http://localhost:8002/api/v1/ai-search/embedding-status", {
+      const response = await fetch("http://147.93.155.233:8002/api/v1/ai-search/embedding-status", {
         headers: {
           'Authorization': `Bearer ${token}`,
           'X-Company-ID': companyId.toString()
@@ -166,7 +166,7 @@ export default function CandidatesSearch() {
         return;
       }
 
-      const response = await fetch("http://localhost:8002/api/v1/ai-search/search", {
+      const response = await fetch("http://147.93.155.233:8002/api/v1/ai-search/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

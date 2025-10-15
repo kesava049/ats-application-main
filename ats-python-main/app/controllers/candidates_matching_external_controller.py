@@ -1249,9 +1249,9 @@ async def get_all_matched_data(
                         if similarity_score >= min_score:
                             
                             # Generate full URLs for resume access
-                            resume_download_url = f"http://158.220.127.100:8000/api/v1/download/resume/{resume_id}"
-                            parsed_resume_url = f"http://158.220.127.100:8000/api/v1/resumes/{resume_id}/parsed-data"
-                            job_details_url = f"http://158.220.127.100:3000/job/{job_id}"  # Frontend job details page
+                            resume_download_url = f"http://147.93.155.233:8000/api/v1/download/resume/{resume_id}"
+                            parsed_resume_url = f"http://147.93.155.233:8000/api/v1/resumes/{resume_id}/parsed-data"
+                            job_details_url = f"http://147.93.155.233:3001/job/{job_id}"  # Frontend job details page
                             
                             # Get hardcoded explanations (fast, no GPT calls)
                             skills_explanation = get_skills_explanation(
@@ -2082,9 +2082,9 @@ async def get_candidates_for_job_fast(
                     candidate_experience = parsed_data.get('TotalExperience', 'Unknown')
                     
                     # Generate full URLs for resume access
-                    resume_download_url = f"http://158.220.127.100:8000/api/v1/download/resume/{resume_id}"
-                    parsed_resume_url = f"http://158.220.127.100:8000/api/v1/resumes/{resume_id}/parsed-data"
-                    job_details_url = f"http://158.220.127.100:3000/job/{job_id}"  # Frontend job details page
+                    resume_download_url = f"http://147.93.155.233:8000/api/v1/download/resume/{resume_id}"
+                    parsed_resume_url = f"http://147.93.155.233:8000/api/v1/resumes/{resume_id}/parsed-data"
+                    job_details_url = f"http://147.93.155.233:3001/job/{job_id}"  # Frontend job details page
                     
                     # Get hardcoded explanations (fast, no GPT calls)
                     skills_explanation = get_skills_explanation(

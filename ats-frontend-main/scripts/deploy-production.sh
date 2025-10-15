@@ -28,7 +28,7 @@ if [ $? -eq 0 ]; then
     cat > start-production.sh << 'EOF'
 #!/bin/bash
 export NODE_ENV=production
-export PORT=${PORT:-3000}
+export PORT=${PORT:-3001}
 echo "🌐 Starting production server on port $PORT"
 npm start
 EOF
