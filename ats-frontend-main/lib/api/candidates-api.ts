@@ -1,5 +1,5 @@
 // API service for candidates matching endpoints
-const BASE_URL = 'http://147.93.155.233:8002';
+const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_API_URL || 'http://147.93.155.233:8000';
 
 // Helper function to get company ID from localStorage
 const getCompanyId = (): number | null => {
