@@ -7,6 +7,7 @@ const nextConfig = {
         NEXT_PUBLIC_PYTHON_API_URL: 'http://147.93.155.233:8000',
         NEXT_PUBLIC_PYTHON_BASE_URL: 'http://147.93.155.233:8000',
         NEXT_PUBLIC_BASE_API_URL: 'http://147.93.155.233:5000/api',
+        NEXT_PUBLIC_FRONTEND_URL: 'http://147.93.155.233:3001',
         PORT: '3001'
     },
     eslint: {
